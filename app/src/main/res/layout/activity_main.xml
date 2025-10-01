@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Income Input -->
+    <EditText
+        android:id="@+id/inputIncome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Income"
+        android:inputType="numberDecimal" />
+
+    <!-- Expenses Input -->
+    <EditText
+        android:id="@+id/inputExpenses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Expenses"
+        android:inputType="numberDecimal" />
+
+    <!-- Button -->
+    <Button
+        android:id="@+id/btnCalculate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calculate Balance" />
+
+    <!-- Result -->
+    <TextView
+        android:id="@+id/txtResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your balance will appear here"
+        android:textSize="18sp"
+        android:paddingTop="16dp" />
+</LinearLayout>
