@@ -147,7 +147,7 @@ class SmsParserService(private val context: Context) {
     
     fun getSampleMessage(): String {
         return prefs.getString("sample_message", 
-            "LKR 6,323.30 debited from AC XXXXXXXX4105 as POS TXN on 01 Oct 2025 17:49 at CURSOR. Avl Bal 14,297.98 Call 94112448888 for info"
-        ) ?: "LKR 6,323.30 debited from AC XXXXXXXX4105 as POS TXN on 01 Oct 2025 17:49 at CURSOR. Avl Bal 14,297.98 Call 94112448888 for info"
+            "LKR 6,1234.30 debited from AC XXXXXXXX1234 as POS TXN on 01 Oct 2025 17:49 at ABCDE. Avl Bal 12,123.98 Call 94112448888 for info"
+        ) ?: "LKR 6,1234.30 debited from AC XXXXXXXX1234 as POS TXN on 01 Oct 2025 17:49 at ABCDE. Avl Bal 12,123.98 Call 94112448888 for info"
     }
 }

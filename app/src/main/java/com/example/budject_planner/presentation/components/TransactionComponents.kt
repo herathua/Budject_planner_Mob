@@ -1,5 +1,6 @@
 package com.example.budject_planner.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,52 +38,92 @@ fun TransactionItem(
     
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (transaction.type == TransactionType.INCOME)
                 Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = transaction.note,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = dateFormat.format(Date(transaction.date)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (transaction.source == TransactionSource.SMS) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Transaction Type Icon
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            if (transaction.type == TransactionType.INCOME)
+                                Color(0xFF4CAF50).copy(alpha = 0.1f)
+                            else Color(0xFFF44336).copy(alpha = 0.1f),
+                            RoundedCornerShape(20.dp)
+                        ),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
                     Text(
-                        text = "From SMS",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                        text = if (transaction.type == TransactionType.INCOME) "📈" else "📉",
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
+                
+                Spacer(modifier = Modifier.width(12.dp))
+                
+                Column {
+                    Text(
+                        text = transaction.note,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = dateFormat.format(Date(transaction.date)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (transaction.source == TransactionSource.SMS) {
+                        Text(
+                            text = "From SMS",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "${if (transaction.type == TransactionType.INCOME) "+" else "-"}Rs %.2f"
-                        .format(transaction.amount),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (transaction.type == TransactionType.INCOME)
-                        Color(0xFF4CAF50) else Color(0xFFF44336)
-                )
-                IconButton(onClick = { onDelete(transaction.id) }) {
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(
+                    horizontalAlignment = androidx.compose.ui.Alignment.End
+                ) {
+                    Text(
+                        text = "${if (transaction.type == TransactionType.INCOME) "+" else "-"}Rs ${String.format("%.2f", transaction.amount)}",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = if (transaction.type == TransactionType.INCOME)
+                            Color(0xFF4CAF50) else Color(0xFFF44336)
+                    )
+                }
+                
+                IconButton(
+                    onClick = { onDelete(transaction.id) },
+                    modifier = Modifier.size(32.dp)
+                ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }

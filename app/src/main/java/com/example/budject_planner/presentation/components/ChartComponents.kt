@@ -19,60 +19,177 @@ import androidx.compose.ui.unit.sp
 import com.example.budject_planner.domain.model.ChartData
 import kotlin.math.*
 
+enum class ChartType {
+    LINE, BAR, PIE
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetChart(
     chartData: ChartData,
     modifier: Modifier = Modifier
 ) {
+    var selectedChartType by remember { mutableStateOf(ChartType.LINE) }
+    var expanded by remember { mutableStateOf(false) }
+    
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
-            Text(
-                text = "Budget Overview (Last 30 Days)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            // Header with chart type selector
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Budget Analytics",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                // Chart type dropdown
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = when(selectedChartType) {
+                            ChartType.LINE -> "Line Chart"
+                            ChartType.BAR -> "Bar Chart"
+                            ChartType.PIE -> "Pie Chart"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .width(120.dp),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        ChartType.values().forEach { type ->
+                            DropdownMenuItem(
+                                text = { 
+                                    Text(
+                                        when(type) {
+                                            ChartType.LINE -> "Line Chart"
+                                            ChartType.BAR -> "Bar Chart"
+                                            ChartType.PIE -> "Pie Chart"
+                                        }
+                                    )
+                                },
+                                onClick = {
+                                    selectedChartType = type
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
             
             if (chartData.labels.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(250.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "No data available",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "📊",
+                            style = MaterialTheme.typography.displaySmall
+                        )
+                        Text(
+                            text = "No data available",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Add some transactions to see your budget analytics",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else {
-                LineChart(
-                    chartData = chartData,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
+                // Chart based on selection
+                when (selectedChartType) {
+                    ChartType.LINE -> {
+                        LineChart(
+                            chartData = chartData,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                        )
+                    }
+                    ChartType.BAR -> {
+                        BarChart(
+                            chartData = chartData,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                        )
+                    }
+                    ChartType.PIE -> {
+                        PieChart(
+                            income = chartData.incomeData.sum(),
+                            expense = chartData.expenseData.sum(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                        )
+                    }
+                }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
-                // Legend
-                Row(
+                // Enhanced Legend
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    LegendItem(
-                        color = Color(0xFF4CAF50),
-                        label = "Income"
-                    )
-                    LegendItem(
-                        color = Color(0xFFF44336),
-                        label = "Expense"
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        LegendItem(
+                            color = Color(0xFF4CAF50),
+                            label = "Income",
+                            value = chartData.incomeData.sum()
+                        )
+                        LegendItem(
+                            color = Color(0xFFF44336),
+                            label = "Expense",
+                            value = chartData.expenseData.sum()
+                        )
+                    }
                 }
             }
         }
@@ -264,11 +381,13 @@ fun PieChart(
             ) {
                 LegendItem(
                     color = Color(0xFF4CAF50),
-                    label = "Income (${String.format("%.1f", income)})"
+                    label = "Income",
+                    value = income
                 )
                 LegendItem(
                     color = Color(0xFFF44336),
-                    label = "Expense (${String.format("%.1f", expense)})"
+                    label = "Expense",
+                    value = expense
                 )
             }
         }
@@ -278,22 +397,33 @@ fun PieChart(
 @Composable
 fun LegendItem(
     color: Color,
-    label: String
+    label: String,
+    value: Double = 0.0
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(12.dp)
-                .background(color, RoundedCornerShape(2.dp))
+                .size(16.dp)
+                .background(color, RoundedCornerShape(4.dp))
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            fontSize = 12.sp
-        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (value > 0) {
+                Text(
+                    text = "$${String.format("%.2f", value)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }
 
@@ -381,11 +511,13 @@ fun BarChart(
                 ) {
                     LegendItem(
                         color = Color(0xFF4CAF50),
-                        label = "Income"
+                        label = "Income",
+                        value = chartData.incomeData.sum()
                     )
                     LegendItem(
                         color = Color(0xFFF44336),
-                        label = "Expense"
+                        label = "Expense",
+                        value = chartData.expenseData.sum()
                     )
                 }
             }
