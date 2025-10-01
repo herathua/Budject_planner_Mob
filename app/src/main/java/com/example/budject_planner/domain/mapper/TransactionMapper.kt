@@ -57,18 +57,22 @@ object TransactionMapper {
         )
     }
     
+    @JvmName("transactionEntitiesToDomain")
     fun List<TransactionEntity>.toDomain(): List<Transaction> {
         return map { it.toDomain() }
     }
     
+    @JvmName("transactionsToDomain")
     fun List<Transaction>.toEntity(): List<TransactionEntity> {
         return map { it.toEntity() }
     }
     
+    @JvmName("smsMessageEntitiesToDomain")
     fun List<SmsMessageEntity>.toDomain(): List<SmsMessage> {
         return map { it.toDomain() }
     }
     
+    @JvmName("smsMessagesToEntity")
     fun List<SmsMessage>.toEntity(): List<SmsMessageEntity> {
         return map { it.toEntity() }
     }

@@ -38,6 +38,12 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "META-INF/androidx.*.version"
+            pickFirsts += "META-INF/androidx.interpolator_interpolator.version"
+        }
+    }
 }
 
 dependencies {
@@ -61,8 +67,22 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     
     // Charts
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0") {
+        exclude(group = "com.android.support", module = "support-compat")
+        exclude(group = "com.android.support", module = "support-annotations")
+        exclude(group = "com.android.support", module = "support-v4")
+        exclude(group = "com.android.support", module = "animated-vector-drawable")
+        exclude(group = "com.android.support", module = "support-vector-drawable")
+        exclude(group = "com.android.support", module = "versionedparcelable")
+    }
+    implementation("com.github.AnyChart:AnyChart-Android:1.1.2") {
+        exclude(group = "com.android.support", module = "support-compat")
+        exclude(group = "com.android.support", module = "support-annotations")
+        exclude(group = "com.android.support", module = "support-v4")
+        exclude(group = "com.android.support", module = "animated-vector-drawable")
+        exclude(group = "com.android.support", module = "support-vector-drawable")
+        exclude(group = "com.android.support", module = "versionedparcelable")
+    }
     
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
