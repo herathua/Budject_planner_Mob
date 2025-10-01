@@ -15,7 +15,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 
 import com.example.budject_planner.di.DatabaseModule
-import com.example.budject_planner.presentation.screen.BudgetScreen
+import com.example.budject_planner.presentation.screen.TabScreen
 import com.example.budject_planner.presentation.viewmodel.BudgetViewModel
 import com.example.budject_planner.ui.theme.Budject_plannerTheme
 
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                     }
                 )
                 
-                BudgetScreen(viewModel = viewModel)
+                    TabScreen(viewModel = viewModel)
             }
         }
     }
